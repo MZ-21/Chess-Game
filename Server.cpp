@@ -30,6 +30,7 @@ int main(void)
     SocketServer sockServer(3000); // create server socket
     Socket gameSocket = sockServer.Accept(); // accepts connections to game
     GameManager gameThread(gameSocket, gameFlag);
+    std::cout<<"I am server"<<std::endl;
     // run threadMain from GameManager
     while(true){
         sleep(1);

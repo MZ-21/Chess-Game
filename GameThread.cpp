@@ -28,4 +28,13 @@ int main(void)
     bool flag = true;
     Socket gameSock("127.0.0.1", 3000); // connect to server
     GameThread gThread(gameSock, flag);
+    gameSock.Open(); // open socket
+    std::cout<<"I am game thread"<<std::endl;
+    // run threadMain
+    while(flag){
+		sleep(1);
+	}
+
+	gameSock.Close(); // close socket
+	return 0;
 }
