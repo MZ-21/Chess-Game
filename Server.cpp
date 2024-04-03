@@ -28,7 +28,7 @@ public:
         {
 
             // Write manipulated msg back to socket
-            ByteArray buffered_msg("Connected");
+            ByteArray buffered_msg("Waiting for another player");
             int success_writing = socket->Write(buffered_msg);
             // printf("%d number bytes written to client\n", success_writing);
 
