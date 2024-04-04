@@ -124,7 +124,6 @@ int main(void) {
 
                 //Remove the client from the waiting list
                 clientSockets.erase(clientSockets.begin());
-                clientSockets.erase(clientSockets.begin());
             }
 
             // Socket *socket_connect_req = new Socket(s1->Accept()); // socket of connection to client
