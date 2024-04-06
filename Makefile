@@ -33,13 +33,11 @@ GameThread : GameThread.o thread.o socket.o Blockable.o
 GameThread.o : GameThread.cpp socket.h
 	g++ -c GameThread.cpp -std=c++11
 
-Game/main.o: Game/main.cpp Game/chess.h Game/chess.cpp
-	g++ -c Game/main.cpp -std=c++11
-
 GameThread : GameThread.o thread.o socket.o Blockable.o
 	g++ -o GameThread GameThread.o socket.o thread.o Blockable.o -pthread -l rt
 
 GameThread.o : GameThread.cpp socket.h
 	g++ -c GameThread.cpp -std=c++11
+
 Game/main.o: Game/main.cpp Game/chess.h Game/chess.cpp
 	g++ -c Game/main.cpp -std=c++11
