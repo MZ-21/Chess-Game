@@ -112,6 +112,7 @@ int main(void) {
 
             // Check if we have two clients to start a game
             if (clientSockets.size() >= 2) {
+                std::cout << "found 2" << std::endl;
                 // Create a game session with the first two clients
                 GameManager* game = new GameManager(clientSockets[0], clientSockets[1]);
                 game->Start(); // Start game session in a new thread

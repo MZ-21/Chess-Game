@@ -17,8 +17,8 @@ int main(void)
 	try
 	{
 		// user input
-		while (true) // should we have a while loop here?
-		{
+		//while (true) // should we have a while loop here?
+		//{
             std::string nameUser;
             
 			std::cout << "Do you want to play chess? (enter done/server to close connection/server): ";
@@ -28,10 +28,11 @@ int main(void)
 
             if((inputString == "y" || inputString == "yes")){
                 
-                sock1->Open(); // attempting to connect to server
-
                 std::cout << "Enter your name: ";
 			    std::cin >> nameUser;
+
+                sock1->Open(); // attempting to connect to server
+
                 ByteArray *byteA = new ByteArray(nameUser);//sending name user to server
                 int number_bytes_written = sock1->Write(*byteA);
 
@@ -42,7 +43,7 @@ int main(void)
 			{
 				printf("User entered done/server, closing socket");
 				sock1->Close();
-				break;
+				//break;
 			}
 			else
 			{
@@ -53,7 +54,7 @@ int main(void)
 				std::string msg_server= buff_server_msg->ToString();
 				std::cout << " \nMsg from server " << msg_server << std::endl;
 			}
-		}
+		//}
 	}
 	catch (const std::exception &e)
 	{
