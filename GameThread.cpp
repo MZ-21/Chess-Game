@@ -35,6 +35,14 @@ public:
         {
             // Game logic here
             // For example, read data from each socket (player1 and player2)
+
+            // loop until game is over
+                // give player1 mutex to make move (player2 is blocked)
+                // receive input and process (maybe use sock.Read())
+                // check if move is possible, let both know the move (sock.Write())
+                // take mutex from player 1 and give to player2 (player1 is blocked)
+                // receive input and process (sock.Read())
+
             // Process the game logic based on data received
             // Respond to each player based on game state
 

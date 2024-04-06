@@ -17,7 +17,7 @@ int main(void)
 		unsigned int port = 2000;
 
 		// user input
-		while (true)
+		while (true) // should we have a while loop here?
 		{
 			std::string inputString;
             std::string nameUser;

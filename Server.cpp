@@ -19,12 +19,12 @@ class GameManager : public Thread {
     private:
     // Socket& sock;
     // bool& flag;
-    Socket *player1, *player2;
+    Socket *player1, *player2; // do we want to use reference instead of pointers
 
     public:
         // GameManager(Socket& s, bool& f) : sock(s), flag(f){} // get access to socket and flag
         ~GameManager(){} // destructor to kill thread
-        GameManager(Socket *p1, Socket *p2) : player1(p1), player(p2) {}
+        GameManager(Socket *p1, Socket *p2) : player1(p1), player2(p2) {}
     
     // manage thread from game
     virtual long ThreadMain() override{
@@ -36,7 +36,7 @@ class GameManager : public Thread {
         return 0;
         //sock.Close(); // close connection
     }
-}
+};
 
 class ThreadSocket : public Thread
 {
@@ -99,7 +99,7 @@ int main(void) {
     SocketServer sockServer(3000); // create server socket
     //Socket gameSocket = sockServer.Accept(); // accepts connections to game
     //GameManager gameThread(gameSocket, gameFlag);
-    std::vector<Socket*> clientSockets;
+    std::vector<Socket*> clientSockets; // do we wanted to use a pointer?
     std::cout<<"I am server"<<std::endl;
     
     // run threadMain from GameManager
@@ -112,7 +112,7 @@ int main(void) {
         //SocketServer *s1 = new SocketServer(2000); // socket listening on port 2000
         while (true){
             // Blocking call, it will not return until someone tries to open socket on port, returns socket
-            Socket* clientSockets = new Socket(server.Accept());
+            Socket* clientSockets = new Socket(sockServer.Accept());
             std::cout << "Client connected!" << std::endl;
             clientSockets.push_back(clientSockets);
 
