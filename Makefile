@@ -1,4 +1,4 @@
-all: Client Server
+all: Client Server ChessGame
 
 Client : Client.o thread.o socket.o Blockable.o
 	g++ -o Client Client.o socket.o thread.o Blockable.o -pthread -l rt
@@ -18,6 +18,9 @@ Server.o : Server.cpp thread.h socketserver.h
 thread.o : thread.cpp thread.h
 	g++ -c thread.cpp -std=c++11
 
+ChessGame: Game/main.o Game/chess.o
+	g++ -o ChessGame Game/main.o Game/chess.o -std=c++11
+
 socket.o : socket.cpp socket.h
 	g++ -c socket.cpp -std=c++11
 
@@ -29,3 +32,14 @@ GameThread : GameThread.o thread.o socket.o Blockable.o
 
 GameThread.o : GameThread.cpp socket.h
 	g++ -c GameThread.cpp -std=c++11
+
+Game/main.o: Game/main.cpp Game/chess.h Game/chess.cpp
+	g++ -c Game/main.cpp -std=c++11
+
+GameThread : GameThread.o thread.o socket.o Blockable.o
+	g++ -o GameThread GameThread.o socket.o thread.o Blockable.o -pthread -l rt
+
+GameThread.o : GameThread.cpp socket.h
+	g++ -c GameThread.cpp -std=c++11
+Game/main.o: Game/main.cpp Game/chess.h Game/chess.cpp
+	g++ -c Game/main.cpp -std=c++11
