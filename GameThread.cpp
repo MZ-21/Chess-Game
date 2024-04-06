@@ -8,7 +8,7 @@
 
 using namespace Sync;
 
-class GameThread : public Thread
+class GameThread : public Thread //how to link game thread with the chess logic?
 {
 private:
     // Socket& sock;

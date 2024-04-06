@@ -131,11 +131,19 @@ FlexWait::FlexWait(int n,... )
 // never time out.
 void ShowFD_Set (fd_set & theSet)
 {
-    int total = 1024 / (8 * (int) sizeof (__fd_mask));
-    for (int i=0;i<total; i++)
-    {
-        if (theSet.fds_bits[i])
-            std::cout << i << " contains something " << std::hex << theSet.fds_bits[i] << std::endl;
+    // int total = 1024 / (8 * (int) sizeof (__fd_mask));
+    // for (int i=0;i<total; i++)
+    // {
+    //     if (theSet.fds_bits[i])
+    //         std::cout << i << " contains something " << std::hex << theSet.fds_bits[i] << std::endl;
+    // }
+    
+    //depends on what OS you use. since i am on mac, use this for now but don't push it!!
+    // This is a portable way to check which FDs are set
+    for (int i = 0; i < FD_SETSIZE; ++i) {
+        if (FD_ISSET(i, &theSet)) {
+            std::cout << i << " is set\n";
+        }
     }
 
 }

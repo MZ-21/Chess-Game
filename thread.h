@@ -8,26 +8,34 @@
 #include <string>
 #include <thread>
 #include "Blockable.h"
+
 void ThreadFunction(void * me);
-class Thread
-{
+
+class Thread {
     friend void ThreadFunction(void * me);
 private:
-	std::thread theThread;
+    std::thread theThread;
     int exitTimeout;
 
 protected:
     Sync::Event terminationEvent;
 
-private:
-    Thread(Thread const &){}
-    Thread & operator=(Thread const &){}
 public:
+    // Constructor declaration
     Thread(int exitTimeout = 1000);
+    
+    // Destructor declaration
     virtual ~Thread();
+
+    // Delete the copy constructor and copy assignment operator
+    Thread(Thread const &) = delete;
+    Thread &operator=(Thread const &) = delete;
 
     // Override this function in your threads
     virtual long ThreadMain(void) = 0;
+
+    // Method to start the thread
+    void Start();
 };
 
 #endif // THREAD_H

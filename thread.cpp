@@ -36,3 +36,9 @@ void ThreadFunction(void * me)
     }
     theThread->terminationEvent.Trigger();
 }
+
+void Thread::Start() {
+    if (!theThread.joinable()) {  // Ensure the thread is not already running
+        theThread = std::thread(&Thread::ThreadMain, this);
+    }
+}

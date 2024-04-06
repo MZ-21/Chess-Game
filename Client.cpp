@@ -10,32 +10,32 @@ using namespace Sync;
 int main(void)
 {
 	std::cout << "I am a client" << std::endl;
+	std::string inputString;
+	std::string ipAdr = "127.0.0.1";
+	unsigned int port = 3000;
 
 	try
 	{
-		std::string ipAdr = "127.0.0.1";
-		unsigned int port = 2000;
-
 		// user input
 		while (true) // should we have a while loop here?
 		{
-			std::string inputString;
             std::string nameUser;
             
 			std::cout << "Do you want to play chess? (enter done/server to close connection/server): ";
-			std::getline(std::cin, inputString);
+			std::cin >> inputString;
 
             Socket *sock1 = new Socket(ipAdr, port); // socket on port 2000
 
-            if((inputString == "y" || inputString == "yes") && (inputString != "no" || inputString != "n")){
+            if((inputString == "y" || inputString == "yes")){
                 
                 sock1->Open(); // attempting to connect to server
 
                 std::cout << "Enter your name: ";
-			    std::getline(std::cin, nameUser);
+			    std::cin >> nameUser;
                 ByteArray *byteA = new ByteArray(nameUser);//sending name user to server
                 int number_bytes_written = sock1->Write(*byteA);
 
+		
             }
 
 			if (inputString == "done" || inputString == "server")

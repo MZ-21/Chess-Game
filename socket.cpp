@@ -36,14 +36,6 @@ Socket::Socket(Socket const & s)
     open = s.open;
 }
 
-Socket & Socket::operator=(Socket const & rhs)
-{
-    close(GetFD());
-    socketDescriptor = rhs.socketDescriptor;
-    SetFD(dup(rhs.GetFD()));
-    open = rhs.open;
-}
-
 Socket::~Socket(void)
 {
     Close();
@@ -58,6 +50,23 @@ int Socket::Open(void)
         throw std::string("Unable to open connection");
     }
     open = true;
+    return connectReturn; // Ensure that a value is returned.
+}
+
+Socket & Socket::operator=(Socket const & rhs)
+{
+    // close(GetFD());
+    // socketDescriptor = rhs.socketDescriptor;
+    // SetFD(dup(rhs.GetFD()));
+    // open = rhs.open;
+
+    if (this != &rhs) { // Check for self-assignment
+        close(GetFD());
+        socketDescriptor = rhs.socketDescriptor;
+        SetFD(dup(rhs.GetFD()));
+        open = rhs.open;
+    }
+    return *this; // Return a reference to the current object.
 }
 
 int Socket::Write(ByteArray const & buffer)
