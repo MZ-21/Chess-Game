@@ -52,6 +52,10 @@ int main(void)
 
 				std::string msg_server= buff_server_msg->ToString();
 				std::cout << " \nMsg from server " << msg_server << std::endl;
+
+				if(msg_server == "Ready Game!"){
+					
+				}
 			}
 		}
 	}

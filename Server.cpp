@@ -41,7 +41,17 @@ class GameManager : public Thread {
 class ThreadSocket : public Thread
 {
 public:
-    ThreadSocket(Socket *socket_connect_req) : socket(socket_connect_req){}
+    int number_of_players;
+public:
+    ThreadSocket(Socket *socket_connect_req, const int &num_players) : socket(socket_connect_req){
+        number_of_players = num_players;
+    }
+    int getNumPlayers(){
+        return number_of_players;
+    }
+    int setNumberPlayers(const int &num_p){
+        number_of_players = num_p;
+    }
 
     long ThreadMain() override {
         // Read a message from the client
@@ -110,8 +120,11 @@ int main(void) {
                 clientSockets.push_back(newClientSocket);
             }
 
+            ThreadSocket* comms = new ThreadSocket(newClientSocket, clientSockets.size());
             // Check if we have two clients to start a game
             if (clientSockets.size() >= 2) {
+                
+
                 // Create a game session with the first two clients
                 GameManager* game = new GameManager(clientSockets[0], clientSockets[1]);
                 game->Start(); // Start game session in a new thread
