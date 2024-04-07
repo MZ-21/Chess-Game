@@ -28,6 +28,7 @@ public:
 
 class Board
 {
+public:
 	Square square[8][8];
 	Color turn=WHITE;
 	bool moveKing(Square* thisKing, Square* thatSpace);
@@ -38,14 +39,13 @@ class Board
 	bool movePawn(Square* thisPawn, Square* thatSpace);
 	bool makeMove(int x1, int y1, int x2, int y2);
 	void printBoard();
-public:
 	Square* getSquare(int x, int y) {
 		return &square[x][y];
 	}
 	void setSquare(Square * s, int x, int y){
 		square[x][y]=*s;
 	}
-	bool doMove();
+	bool doMove(std::string mv, int px1, int px2, int py1, int py2);
 	
 	void setBoard();
 	bool playGame();
