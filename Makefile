@@ -1,7 +1,7 @@
 all: Client Server ChessGame
 
-Client : Client.o thread.o socket.o Blockable.o
-	g++ -o Client Client.o socket.o thread.o Blockable.o -pthread
+Client : Client.o thread.o socket.o Blockable.o Game/chess.o
+	g++ -o Client Client.o socket.o thread.o Blockable.o Game/chess.o -pthread
 
 Client.o : Client.cpp socket.h
 	g++ -c Client.cpp -std=c++11

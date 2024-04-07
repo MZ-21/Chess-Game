@@ -1,4 +1,5 @@
 #include "chess.h"
+#include <cstdlib>
 
 
 Square::Square()
@@ -74,7 +75,7 @@ void Board::printBoard() {
 
 }
 
-bool Board::doMove() {
+bool Board::doMove(/*string mv, int x1, int x2, int y1, int y2*/) {
 	using namespace std;
 	string move;
 	int x1, x2, y1, y2;
