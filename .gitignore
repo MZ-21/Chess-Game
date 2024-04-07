@@ -1,0 +1,4 @@
+*.o
+ChessGame
+Client
+Server
