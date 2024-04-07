@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <limits>
+#include "Game/chess.h"
 
 using namespace Sync;
 
@@ -32,9 +33,59 @@ int main(void)
 			    std::cin >> nameUser;
 
                 sock1->Open(); // attempting to connect to server
+// wait for the other player
+// if there is another player, start game
+				ByteArray msg_rcv;
+				int number_bytes_received = sock1->Read(msg_rcv);
+        		std::string msg_server = msg_rcv.ToString();
+				if(msg_server != "start"){
+					std::cout << msg_server << std::endl;
+					number_bytes_received = sock1->Read(msg_rcv);
+        			msg_server = msg_rcv.ToString();
+					std::cout << msg_server << std::endl;
+				}
+				sock1->Write(nameUser);
+				number_bytes_received = sock1->Read(msg_rcv);
+        		msg_server = msg_rcv.ToString();
+				std::cout << "Your opponent is here"<< std::endl;
+				std::cout << msg_server << std::endl;
+				Board b;
+				b.setBoard();
+				
+				std::string move;
+				int x1, x2, y1, y2;
+				bool stop = false;
+				// while (!stop)
+				// {
+				// 	(turn == WHITE) ? std::cout << "White's turn" << std::endl : std::cout << "Black's turn" << std::endl;
+				// 	std::cout << "Type in your move as a single four character string. Use x-coordinates first in each pair." << endl;
+				// 	std::cin >> move;
+				// 	x1 = move[0] - 48;
+				// 	y1 = move[1] - 48;
+				// 	x2 = move[2] - 48;
+				// 	y2 = move[3] - 48;
+				// 	if (b.getSquare(x1, y1)->b.getColor() == turn)
+				// 	{
 
-                ByteArray *byteA = new ByteArray(nameUser);//sending name user to server
-                int number_bytes_written = sock1->Write(*byteA);
+
+				// 		if (b.makeMove(x1, y1, x2, y2) == false)
+				// 		{
+				// 			std::cout << "Invalid move, try again." << std::endl;
+				// 		}
+				// 		else
+				// 			stop = true;
+				// 	}
+				// 	else
+				// 		std::cout << "That's not your piece. Try again." << std::endl;
+				// }
+
+				//b.doMove();
+
+				// do move
+				//bool test = b.playGame();
+
+                // ByteArray *byteA = new ByteArray(nameUser);//sending name user to server
+                // int number_bytes_written = sock1->Write(*byteA);
 
 		
             }

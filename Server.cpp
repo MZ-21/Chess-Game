@@ -28,11 +28,21 @@ class GameManager : public Thread {
     
     // manage thread from game
     virtual long ThreadMain() override{
+        ByteArray msg("start");
+        player1->Write(msg);
+        player2->Write(msg);
+        ByteArray clientmsg;
+        player1->Read(clientmsg);
+        player2->Read(clientmsg);
+        ByteArray msg1("you will play as White");
+        ByteArray msg2("you will play as Black");
+        player1->Write(msg1);
+        player2->Write(msg2);
         //Game logic here
-        player1->Close();
-        player2->Close();
-        delete player1;
-        delete player2;
+        // player1->Close();
+        // player2->Close();
+        // delete player1;
+        // delete player2;
         return 0;
         //sock.Close(); // close connection
     }
@@ -133,6 +143,10 @@ int main(void) {
                     std::lock_guard<std::mutex> lock(mtx);
                     clientSockets.erase(clientSockets.begin(), clientSockets.begin() + 2);
                 }
+            }
+            else{
+                ByteArray msg_to_client("waiting for opponent");
+                newClientSocket->Write(msg_to_client);
             }
         }
     } catch (const std::exception &e) {
