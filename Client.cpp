@@ -8,6 +8,52 @@
 
 using namespace Sync;
 
+void getOpponentMove(Socket* sock1, Board& b, std::string name){
+	(name == "Black") ? std::cout << "Waiting for White to make move" << std::endl : std::cout << "Waiting for Black to make move" << std::endl;
+	ByteArray msg_rcv;
+	int number_bytes_received = sock1->Read(msg_rcv);
+	std::string msg_server = msg_rcv.ToString();
+	int x1 = msg_server[0] - 48;
+	int y1 = msg_server[1] - 48;
+	int x2 = msg_server[2] - 48;
+	int y2 = msg_server[3] - 48;
+	b.makeMove(x1, y1, x2, y2);
+	b.doMove(msg_server, x1, x2, y1, y2);
+	b.printBoard();
+}
+
+void makeMove(Socket* sock1, Board& b){
+	std::string move;
+	int x1, x2, y1, y2;
+	bool stop = false;
+	while (!stop)
+	{
+		(b.turn == WHITE) ? std::cout << "White's turn" << std::endl : std::cout << "Black's turn" << std::endl;
+		std::cout << "Type in your move as a single four character string. Use x-coordinates first in each pair." << std::endl;
+		std::cin >> move;
+		x1 = move[0] - 48;
+		y1 = move[1] - 48;
+		x2 = move[2] - 48;
+		y2 = move[3] - 48;
+		if (b.getSquare(x1, y1)->getColor() == b.turn)
+		{
+
+
+			if (b.makeMove(x1, y1, x2, y2) == false)
+			{
+				std::cout << "Invalid move, try again." << std::endl;
+			}
+			else
+				stop = true;
+		}
+		else
+			std::cout << "That's not your piece. Try again." << std::endl;
+	}
+	b.doMove(move, x1, x2, y1, y2);
+	b.printBoard();
+	sock1->Write(move);
+}
+
 int main(void)
 {
 	std::cout << "I am a client" << std::endl;
@@ -42,7 +88,6 @@ int main(void)
 					std::cout << msg_server << std::endl;
 					number_bytes_received = sock1->Read(msg_rcv);
         			msg_server = msg_rcv.ToString();
-					std::cout << msg_server << std::endl;
 				}
 				sock1->Write(nameUser);
 				number_bytes_received = sock1->Read(msg_rcv);
@@ -51,35 +96,21 @@ int main(void)
 				std::cout << msg_server << std::endl;
 				Board b;
 				b.setBoard();
+				b.printBoard();
 				
-				std::string move;
-				int x1, x2, y1, y2;
-				bool stop = false;
-				// while (!stop)
-				// {
-				// 	(turn == WHITE) ? std::cout << "White's turn" << std::endl : std::cout << "Black's turn" << std::endl;
-				// 	std::cout << "Type in your move as a single four character string. Use x-coordinates first in each pair." << endl;
-				// 	std::cin >> move;
-				// 	x1 = move[0] - 48;
-				// 	y1 = move[1] - 48;
-				// 	x2 = move[2] - 48;
-				// 	y2 = move[3] - 48;
-				// 	if (b.getSquare(x1, y1)->b.getColor() == turn)
-				// 	{
+				while(true){
+					if(msg_server.substr(17) == "Black"){
+						getOpponentMove(sock1, b,"Black");
+					}
+					makeMove(sock1, b);
+					if(msg_server.substr(17) == "White"){
+						getOpponentMove(sock1, b,"White");
+					}
+				}
 
 
-				// 		if (b.makeMove(x1, y1, x2, y2) == false)
-				// 		{
-				// 			std::cout << "Invalid move, try again." << std::endl;
-				// 		}
-				// 		else
-				// 			stop = true;
-				// 	}
-				// 	else
-				// 		std::cout << "That's not your piece. Try again." << std::endl;
-				// }
-
-				//b.doMove();
+				// write to server, then read if white
+				std::cout << "done" << std::endl;
 
 				// do move
 				//bool test = b.playGame();

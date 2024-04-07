@@ -63,7 +63,7 @@ void Board::printBoard() {
 				break;
 			case PAWN: (c == WHITE) ? cout << " P " : cout << " p ";
 				break;
-			case EMPTY: cout << " " << "\21" << " ";
+			case EMPTY: cout << " " << "\21" << "  ";
 				break;
 			default: cout << "XXX";
 				break;
@@ -75,34 +75,15 @@ void Board::printBoard() {
 
 }
 
-bool Board::doMove(/*string mv, int x1, int x2, int y1, int y2*/) {
+bool Board::doMove(std::string mv, int px1, int px2, int py1, int py2) {
 	using namespace std;
-	string move;
-	int x1, x2, y1, y2;
+	string move = mv;
+	int x1 = px1;
+	int x2 = px2;
+	int y1 = py1;
+	int y2 = py2;
 	bool stop = false;
-	while (!stop)
-	{
-		(turn == WHITE) ? cout << "White's turn" << endl : cout << "Black's turn" << endl;
-		cout << "Type in your move as a single four character string. Use x-coordinates first in each pair." << endl;
-		cin >> move;
-		x1 = move[0] - 48;
-		y1 = move[1] - 48;
-		x2 = move[2] - 48;
-		y2 = move[3] - 48;
-		if (getSquare(x1, y1)->getColor() == turn)
-		{
 
-
-			if (makeMove(x1, y1, x2, y2) == false)
-			{
-				cout << "Invalid move, try again." << endl;
-			}
-			else
-				stop = true;
-		}
-		else
-			cout << "That's not your piece. Try again." << endl;
-	}
 	if (getSquare(x2, y2)->getPiece() == KING)
 		if (getSquare(x1, y1)->getColor() == WHITE)
 		{
@@ -171,7 +152,7 @@ bool Board::playGame()
 {
 	system("cls");
 	printBoard();
-	return doMove();
+	return false;//doMove();
 
 }
 

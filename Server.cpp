@@ -31,13 +31,26 @@ class GameManager : public Thread {
         ByteArray msg("start");
         player1->Write(msg);
         player2->Write(msg);
+
         ByteArray clientmsg;
         player1->Read(clientmsg);
         player2->Read(clientmsg);
+
         ByteArray msg1("you will play as White");
         ByteArray msg2("you will play as Black");
         player1->Write(msg1);
         player2->Write(msg2);
+
+        while(true){
+            ByteArray player1_move;
+            player1->Read(player1_move);
+            player2->Write(player1_move);
+
+            ByteArray player2_move;
+            player2->Read(player2_move);
+            player1->Write(player2_move);
+        }
+
         //Game logic here
         // player1->Close();
         // player2->Close();
