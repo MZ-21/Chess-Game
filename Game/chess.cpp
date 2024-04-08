@@ -83,9 +83,7 @@ bool Board::doMove(std::string mv, int px1, int px2, int py1, int py2) {
 	int y1 = py1;
 	int y2 = py2;
 	bool stop = false;
-cout << "MOVE: " << getSquare(x2, y2)->getPiece() << endl;
 	if (getSquare(x2, y2)->getPiece() == KING){
-		cout << "WINNING" << endl;
 		if (getSquare(x1, y1)->getColor() == WHITE)
 		{
 			cout << "WHITE WINS" << endl;
@@ -98,11 +96,6 @@ cout << "MOVE: " << getSquare(x2, y2)->getPiece() << endl;
 			return false;
 		}
 	}
-
-	if (turn == BLACK)
-		turn = WHITE;
-	else
-		turn = BLACK;
 
 	return true;
 
