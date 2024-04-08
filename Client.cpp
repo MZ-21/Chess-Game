@@ -17,8 +17,9 @@ bool getOpponentMove(Socket* sock1, Board& b, std::string name){
 	int y1 = msg_server[1] - 48;
 	int x2 = msg_server[2] - 48;
 	int y2 = msg_server[3] - 48;
-	b.makeMove(x1, y1, x2, y2);
+	
 	bool isGameRunning =  b.doMove(msg_server, x1, x2, y1, y2);
+	b.makeMove(x1, y1, x2, y2);
 	b.printBoard();
 	return isGameRunning;
 }
@@ -81,8 +82,8 @@ int main(void)
 			    std::cin >> nameUser;
 
                 sock1->Open(); // attempting to connect to server
-// wait for the other player
-// if there is another player, start game
+			// wait for the other player
+			// if there is another player, start game
 				ByteArray msg_rcv;
 				int number_bytes_received = sock1->Read(msg_rcv);
         		std::string msg_server = msg_rcv.ToString();
@@ -101,10 +102,19 @@ int main(void)
 				b.printBoard();
 				
 				while(gameOn){
+					std::cout << gameOn << std::endl;
 					if(msg_server.substr(17) == "Black"){
 						gameOn = getOpponentMove(sock1, b,"Black");
+
+						if(gameOn == false){
+							break;
+						}
 					}
-					playerMove(sock1, b);
+					gameOn = playerMove(sock1, b);
+						if(gameOn == false){
+							break;
+						}
+
 					if(msg_server.substr(17) == "White"){
 						gameOn = getOpponentMove(sock1, b,"White");
 					}

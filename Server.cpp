@@ -64,71 +64,71 @@ class GameManager : public Thread {
     }
 };
 
-class ThreadSocket : public Thread
-{
-public:
-    int number_of_players;
-public:
-    ThreadSocket(Socket *socket_connect_req, const int &num_players) : socket(socket_connect_req){
-        number_of_players = num_players;
-    }
-    int getNumPlayers(){
-        return number_of_players;
-    }
-    int setNumberPlayers(const int &num_p){
-        number_of_players = num_p;
-    }
+// class ThreadSocket : public Thread
+// {
+// public:
+//     int number_of_players;
+// public:
+//     ThreadSocket(Socket *socket_connect_req, const int &num_players) : socket(socket_connect_req){
+//         number_of_players = num_players;
+//     }
+//     int getNumPlayers(){
+//         return number_of_players;
+//     }
+//     int setNumberPlayers(const int &num_p){
+//         number_of_players = num_p;
+//     }
 
-    long ThreadMain() override {
-        // Read a message from the client
-        ByteArray received_buffered_msg;
-        int number_bytes_received = socket->Read(received_buffered_msg);
-        std::string msg_client = received_buffered_msg.ToString();
+//     long ThreadMain() override {
+//         // Read a message from the client
+//         ByteArray received_buffered_msg;
+//         int number_bytes_received = socket->Read(received_buffered_msg);
+//         std::string msg_client = received_buffered_msg.ToString();
 
  
-        // Check the message content
-        if (msg_client != "server"){
-            // // Write manipulated msg back to socket
-            // ByteArray buffered_msg("Waiting for another player");
-            // int success_writing = socket->Write(buffered_msg);
-            // // printf("%d number bytes written to client\n", success_writing);
-            // return success_writing;
+//         // Check the message content
+//         if (msg_client != "server"){
+//             // // Write manipulated msg back to socket
+//             // ByteArray buffered_msg("Waiting for another player");
+//             // int success_writing = socket->Write(buffered_msg);
+//             // // printf("%d number bytes written to client\n", success_writing);
+//             // return success_writing;
             
-            // Notify the client that we're waiting for another player
-            ByteArray buffered_msg("Waiting for another player");
-            socket->Write(buffered_msg);
-        }
-        else
-        {
-            // printf("user entered done, terminate");
-            Bye();
-            // printf("returning here");
-            //return 0;
-        }
-        // Return the number of bytes received or processed
-        return number_bytes_received;
-    }
-    void Bye(){
-        // terminationEvent.Wait();
-        // socket->Close(); // closing the connection
-        // delete socket;
-        // Close the socket and release resources
-        if (socket) {
-            socket->Close();
-            delete socket;
-            socket = nullptr; // Prevent double deletion and undefined behavior
-        }
-    }
-    ~ThreadSocket()
-    {
-        // waiting on Sync::Event termination event to make a block
-        Bye();
-    }
+//             // Notify the client that we're waiting for another player
+//             ByteArray buffered_msg("Waiting for another player");
+//             socket->Write(buffered_msg);
+//         }
+//         else
+//         {
+//             // printf("user entered done, terminate");
+//             Bye();
+//             // printf("returning here");
+//             //return 0;
+//         }
+//         // Return the number of bytes received or processed
+//         return number_bytes_received;
+//     }
+//     void Bye(){
+//         // terminationEvent.Wait();
+//         // socket->Close(); // closing the connection
+//         // delete socket;
+//         // Close the socket and release resources
+//         if (socket) {
+//             socket->Close();
+//             delete socket;
+//             socket = nullptr; // Prevent double deletion and undefined behavior
+//         }
+//     }
+//     ~ThreadSocket()
+//     {
+//         // waiting on Sync::Event termination event to make a block
+//         Bye();
+//     }
 
-private:
-    Socket *socket;
-    // If manipulateString is defined outside, you may need to declare it here or include its header
-};
+// private:
+//     Socket *socket;
+//     // If manipulateString is defined outside, you may need to declare it here or include its header
+// };
 
 
 int main(void) {
@@ -146,7 +146,7 @@ int main(void) {
                 clientSockets.push_back(newClientSocket);
             }
 
-            ThreadSocket* comms = new ThreadSocket(newClientSocket, clientSockets.size());
+            //ThreadSocket* comms = new ThreadSocket(newClientSocket, clientSockets.size());
             // Check if we have two clients to start a game
             if (clientSockets.size() >= 2) {
                 std::cout << "found 2" << std::endl;
