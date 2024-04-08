@@ -19,7 +19,7 @@ class GameManager : public Thread {
     private:
     // Socket& sock;
     // bool& flag;
-    Socket *player1, *player2; // do we want to use reference instead of pointers
+    Socket *player1, *player2;
 
     public:
         // GameManager(Socket& s, bool& f) : sock(s), flag(f){} // get access to socket and flag
@@ -44,6 +44,9 @@ class GameManager : public Thread {
         while(true){
             ByteArray player1_move;
             player1->Read(player1_move);
+            if(player1_move.ToString() == "finished"){
+                break;
+            }
             player2->Write(player1_move);
 
             ByteArray player2_move;
@@ -52,10 +55,10 @@ class GameManager : public Thread {
         }
 
         //Game logic here
-        // player1->Close();
-        // player2->Close();
-        // delete player1;
-        // delete player2;
+        player1->Close();
+        player2->Close();
+        delete player1;
+        delete player2;
         return 0;
         //sock.Close(); // close connection
     }

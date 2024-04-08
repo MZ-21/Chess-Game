@@ -83,8 +83,9 @@ bool Board::doMove(std::string mv, int px1, int px2, int py1, int py2) {
 	int y1 = py1;
 	int y2 = py2;
 	bool stop = false;
-
-	if (getSquare(x2, y2)->getPiece() == KING)
+cout << "MOVE: " << getSquare(x2, y2)->getPiece() << endl;
+	if (getSquare(x2, y2)->getPiece() == KING){
+		cout << "WINNING" << endl;
 		if (getSquare(x1, y1)->getColor() == WHITE)
 		{
 			cout << "WHITE WINS" << endl;
@@ -96,7 +97,7 @@ bool Board::doMove(std::string mv, int px1, int px2, int py1, int py2) {
 			cout << "BLACK WINS" << endl;
 			return false;
 		}
-
+	}
 
 	if (turn == BLACK)
 		turn = WHITE;
@@ -177,7 +178,7 @@ bool Board::moveQueen(Square* thisQueen, Square* thatSpace) { //there might be p
 	int queenY = thisQueen->getY();
 	int thatX = thatSpace->getX();
 	int thatY = thatSpace->getY();
-	std::cout << "this";
+	// std::cout << "this";
 	int yIncrement;
 	int xIncrement;
 
@@ -215,7 +216,7 @@ bool Board::moveQueen(Square* thisQueen, Square* thatSpace) { //there might be p
 
 					for (int i = 1; i < abs(queenX - thatX); i++)
 					{
-						std::cout << "It got here somehow";
+						// std::cout << "It got here somehow";
 						if (square[queenX + xIncrement*i][queenY + yIncrement*i].getColor() != NONE)
 							return false;
 
@@ -254,7 +255,7 @@ bool Board::moveBishop(Square* thisBishop, Square* thatSpace) { //there might be
 
 		for (int i = 1; i < abs(bishopX - thatX); i++)
 		{
-			std::cout << "It got here somehow";
+			// std::cout << "It got here somehow";
 			if (square[bishopX + xIncrement*i][bishopY + yIncrement*i].getColor() != NONE)
 				return false;
 
