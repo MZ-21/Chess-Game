@@ -8,7 +8,7 @@
 
 using namespace Sync;
 
-void getOpponentMove(Socket* sock1, Board& b, std::string name){
+bool getOpponentMove(Socket* sock1, Board& b, std::string name){
 	(name == "Black") ? std::cout << "Waiting for White to make move" << std::endl : std::cout << "Waiting for Black to make move" << std::endl;
 	ByteArray msg_rcv;
 	int number_bytes_received = sock1->Read(msg_rcv);
@@ -18,11 +18,12 @@ void getOpponentMove(Socket* sock1, Board& b, std::string name){
 	int x2 = msg_server[2] - 48;
 	int y2 = msg_server[3] - 48;
 	b.makeMove(x1, y1, x2, y2);
-	b.doMove(msg_server, x1, x2, y1, y2);
+	bool isGameRunning =  b.doMove(msg_server, x1, x2, y1, y2);
 	b.printBoard();
+	return isGameRunning;
 }
 
-void makeMove(Socket* sock1, Board& b){
+bool playerMove(Socket* sock1, Board& b){
 	std::string move;
 	int x1, x2, y1, y2;
 	bool stop = false;
@@ -49,9 +50,10 @@ void makeMove(Socket* sock1, Board& b){
 		else
 			std::cout << "That's not your piece. Try again." << std::endl;
 	}
-	b.doMove(move, x1, x2, y1, y2);
+	bool isGameRunning = b.doMove(move, x1, x2, y1, y2);
 	b.printBoard();
 	sock1->Write(move);
+	return isGameRunning;
 }
 
 int main(void)
@@ -67,7 +69,7 @@ int main(void)
 		//while (true) // should we have a while loop here?
 		//{
             std::string nameUser;
-            
+            bool gameOn = true;
 			std::cout << "Do you want to play chess? (enter done/server to close connection/server): ";
 			std::cin >> inputString;
 
@@ -98,25 +100,18 @@ int main(void)
 				b.setBoard();
 				b.printBoard();
 				
-				while(true){
+				while(gameOn){
 					if(msg_server.substr(17) == "Black"){
-						getOpponentMove(sock1, b,"Black");
+						gameOn = getOpponentMove(sock1, b,"Black");
 					}
-					makeMove(sock1, b);
+					playerMove(sock1, b);
 					if(msg_server.substr(17) == "White"){
-						getOpponentMove(sock1, b,"White");
+						gameOn = getOpponentMove(sock1, b,"White");
 					}
 				}
 
-
-				// write to server, then read if white
+				sock1->Write(ByteArray("finished"));
 				std::cout << "done" << std::endl;
-
-				// do move
-				//bool test = b.playGame();
-
-                // ByteArray *byteA = new ByteArray(nameUser);//sending name user to server
-                // int number_bytes_written = sock1->Write(*byteA);
 
 		
             }
