@@ -23,7 +23,6 @@ bool getOpponentMove(Socket* sock1, Board& b, std::string name){
 	int y1 = msg_server[1] - 48;
 	int x2 = msg_server[2] - 48;
 	int y2 = msg_server[3] - 48;
-	
 	bool isGameRunning =  b.doMove(msg_server, x1, x2, y1, y2);
 	b.makeMove(x1, y1, x2, y2);
 	if (b.turn == BLACK)
@@ -94,49 +93,37 @@ int main(void)
 			std::cout << "Enter your name: ";
 			std::cin >> nameUser;
 
-<<<<<<< HEAD
-                sock1->Open(); // attempting to connect to server
-			// wait for the other player
-			// if there is another player, start game
-				ByteArray msg_rcv;
-				int number_bytes_received = sock1->Read(msg_rcv);
-        		std::string msg_server = msg_rcv.ToString();
-				if(msg_server != "start"){
-					std::cout << msg_server << std::endl;
-					number_bytes_received = sock1->Read(msg_rcv);
-        			msg_server = msg_rcv.ToString();
-				}
-				sock1->Write(nameUser);
-				number_bytes_received = sock1->Read(msg_rcv);
-        		msg_server = msg_rcv.ToString();
-				std::cout << "Your opponent is here"<< std::endl;
-				std::cout << msg_server << std::endl;
-				Board b;
-				b.setBoard();
-				b.printBoard();
-				
-				while(gameOn){
-					std::cout << gameOn << std::endl;
-					if(msg_server.substr(17) == "Black"){
-						gameOn = getOpponentMove(sock1, b,"Black");
-					}
-					gameOn = playerMove(sock1, b);
-=======
 			sock1->Open(); // attempting to connect to server
 
 			ByteArray msg_rcv;
 			int number_bytes_received = sock1->Read(msg_rcv);
 			std::string msg_server = msg_rcv.ToString();
+			
 			if(msg_server != "start"){
-				std::cout << msg_server << std::endl;
+				std::cout << msg_server << std::endl;//Ready to play msg
+
+				std::string confirm_game;
+				std::cin >> confirm_game;
+
+				ByteArray confirm_game_ba(confirm_game);
+				sock1->Write(confirm_game_ba);//Writing confirmation
+
+				//waiting for opponent msg
+				ByteArray waiting_opponent;
+				sock1->Read(waiting_opponent);
+				std::cout << waiting_opponent.ToString() << std::endl;
+
 				number_bytes_received = sock1->Read(msg_rcv);
 				msg_server = msg_rcv.ToString();
+				
 			}
 			sock1->Write(nameUser);
 			number_bytes_received = sock1->Read(msg_rcv);
 			msg_server = msg_rcv.ToString();
+
 			std::cout << "Your opponent is here" << std::endl;
 			std::cout << msg_server << std::endl;
+
 			Board b;
 			b.setBoard();
 			b.printBoard();
@@ -144,7 +131,6 @@ int main(void)
 			while(gameOn){
 				if(msg_server.substr(17) == "Black"){
 					gameOn = getOpponentMove(sock1, b,"Black");
->>>>>>> 35ce9696a1925b3dae78b7c2715eeca5dd568fe1
 					if(!gameOn) break;
 				}
 				gameOn = playerMove(sock1, b);
@@ -154,16 +140,6 @@ int main(void)
 				}
 			}
 
-<<<<<<< HEAD
-				std::string msg_server= buff_server_msg->ToString();
-				std::cout << " \nMsg from server " << msg_server << std::endl;
-
-				if(msg_server == "Ready Game!"){
-					
-				}
-			}
-		//}
-=======
 			sock1->Write(ByteArray("finished"));
 		}
 
@@ -172,7 +148,6 @@ int main(void)
 			printf("User entered done/server, closing socket");
 			sock1->Close();
 		}
->>>>>>> 35ce9696a1925b3dae78b7c2715eeca5dd568fe1
 	}
 	catch (const std::exception &e)
 	{
