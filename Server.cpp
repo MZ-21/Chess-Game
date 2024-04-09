@@ -51,6 +51,9 @@ class GameManager : public Thread {
 
             ByteArray player2_move;
             player2->Read(player2_move);
+            if(player2_move.ToString() == "finished"){
+                break;
+            }
             player1->Write(player2_move);
         }
 

@@ -20,6 +20,10 @@ bool getOpponentMove(Socket* sock1, Board& b, std::string name){
 	
 	bool isGameRunning =  b.doMove(msg_server, x1, x2, y1, y2);
 	b.makeMove(x1, y1, x2, y2);
+	if (b.turn == BLACK)
+		b.turn = WHITE;
+	else
+		b.turn = BLACK;
 	b.printBoard();
 	return isGameRunning;
 }
@@ -28,6 +32,7 @@ bool playerMove(Socket* sock1, Board& b){
 	std::string move;
 	int x1, x2, y1, y2;
 	bool stop = false;
+	bool isGameRunning;
 	while (!stop)
 	{
 		(b.turn == WHITE) ? std::cout << "White's turn" << std::endl : std::cout << "Black's turn" << std::endl;
@@ -37,6 +42,7 @@ bool playerMove(Socket* sock1, Board& b){
 		y1 = move[1] - 48;
 		x2 = move[2] - 48;
 		y2 = move[3] - 48;
+		isGameRunning = b.doMove(move, x1, x2, y1, y2);
 		if (b.getSquare(x1, y1)->getColor() == b.turn)
 		{
 
@@ -51,7 +57,11 @@ bool playerMove(Socket* sock1, Board& b){
 		else
 			std::cout << "That's not your piece. Try again." << std::endl;
 	}
-	bool isGameRunning = b.doMove(move, x1, x2, y1, y2);
+	// isGameRunning = b.doMove(move, x1, x2, y1, y2);
+	if (b.turn == BLACK)
+		b.turn = WHITE;
+	else
+		b.turn = BLACK;
 	b.printBoard();
 	sock1->Write(move);
 	return isGameRunning;
@@ -105,16 +115,9 @@ int main(void)
 					std::cout << gameOn << std::endl;
 					if(msg_server.substr(17) == "Black"){
 						gameOn = getOpponentMove(sock1, b,"Black");
-
-						if(gameOn == false){
-							break;
-						}
 					}
 					gameOn = playerMove(sock1, b);
-						if(gameOn == false){
-							break;
-						}
-
+					if(!gameOn) break;
 					if(msg_server.substr(17) == "White"){
 						gameOn = getOpponentMove(sock1, b,"White");
 					}

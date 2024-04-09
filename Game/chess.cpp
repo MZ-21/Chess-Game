@@ -83,9 +83,7 @@ bool Board::doMove(std::string mv, int px1, int px2, int py1, int py2) {
 	int y1 = py1;
 	int y2 = py2;
 	bool stop = false;
-//cout << "MOVE: " << getSquare(x2, y2)->getPiece() << endl;
 	if (getSquare(x2, y2)->getPiece() == KING){
-		cout << "WINNING" << endl;
 		if (getSquare(x1, y1)->getColor() == WHITE)
 		{
 			cout << "WHITE WINS" << endl;
@@ -98,11 +96,6 @@ bool Board::doMove(std::string mv, int px1, int px2, int py1, int py2) {
 			return false;
 		}
 	}
-
-	if (turn == BLACK)
-		turn = WHITE;
-	else
-		turn = BLACK;
 
 	return true;
 
@@ -160,7 +153,22 @@ bool Board::playGame()
 bool Board::moveKing(Square* thisKing, Square* thatSpace) {
 	//off board inputs should be handled elsewhere (before this)
 	//squares with same color should be handled elsewhere (before this)
-	if (abs(thatSpace->getX() - thisKing->getX()) == 1)
+	if (abs(thatSpace->getX() - thisKing->getX()) == 1){
+		if (abs(thatSpace->getY() - thisKing->getY()) == 1)
+		{
+			thatSpace->setSpace(thisKing);
+			thisKing->setEmpty();
+			return true;
+		}
+		else if (abs(thatSpace->getY() - thisKing->getY()) == 0)
+		{
+			thatSpace->setSpace(thisKing);
+			thisKing->setEmpty();
+			return true;
+		}
+		else return false;
+	}
+	else if (abs(thatSpace->getX() - thisKing->getX()) == 0){
 		if (abs(thatSpace->getY() - thisKing->getY()) == 1)
 		{
 			thatSpace->setSpace(thisKing);
@@ -168,6 +176,7 @@ bool Board::moveKing(Square* thisKing, Square* thatSpace) {
 			return true;
 		}
 		else return false;
+	}
 	else return false;
 }
 bool Board::moveQueen(Square* thisQueen, Square* thatSpace) { //there might be problems with numbers of brackets
