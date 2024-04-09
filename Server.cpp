@@ -8,12 +8,16 @@
 #include <iostream>
 #include <mutex>
 #include <condition_variable>
+#include "SharedObject.h"
+#include "Semaphore.h"
 
 using namespace Sync;
 
 std::mutex mtx; // Mutex for thread synchronization
 std::condition_variable cv; // Condition variable for notifying
 std::vector<Socket*> clientSockets; // Vector to store client sockets
+
+Semaphore semTurn("Turn", 1, true); // create semaphore to write
 
 class GameManager : public Thread {
     private:
@@ -44,17 +48,32 @@ class GameManager : public Thread {
         while(true){
             ByteArray player1_move;
             player1->Read(player1_move);
+            ByteArray p1_end_msg("player1 has disconnected\nGame Over\nYou Win!");
+            if(!player1->GetOpen()){
+                std::cout << "player1 has disconnected" << std::endl;
+                player2->Write(p1_end_msg);
+                break;
+            }
             if(player1_move.ToString() == "finished"){
                 break;
             }
             player2->Write(player1_move);
-
             ByteArray player2_move;
             player2->Read(player2_move);
+            ByteArray p2_end_msg("player2 has disconnected\nGame Over\nYou Win!");
+            if(!player2->GetOpen()){
+                std::cout << "player2 has disconnected" << std::endl;
+                player1->Write(p2_end_msg);
+                break;
+            }
             if(player2_move.ToString() == "finished"){
                 break;
             }
             player1->Write(player2_move);
+            // if(player2_move.ToString() !="player2 has disconnected\nGame Over\nYou Win!"){
+            //     player1->Write(end_msg)
+            // }
+            // break;
         }
 
         //Game logic here

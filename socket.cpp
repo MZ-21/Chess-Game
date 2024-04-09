@@ -117,4 +117,9 @@ void Socket::Close(void)
     terminator.Trigger();
 
 }
+
+bool Socket::GetOpen(void)
+{
+    return open;
+}
 };
