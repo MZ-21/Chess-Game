@@ -15,10 +15,13 @@ bool getOpponentMove(Socket* sock1, Board& b, std::string name){
 	ByteArray msg_rcv;
 	int number_bytes_received = sock1->Read(msg_rcv);
 	std::string msg_server = msg_rcv.ToString();
+
+	// check if player has disconnected
 	if(msg_server.length() > 4){
 		std::cout << msg_server << std::endl;
 		return false;
 	}
+
 	int x1 = msg_server[0] - 48;
 	int y1 = msg_server[1] - 48;
 	int x2 = msg_server[2] - 48;
@@ -120,14 +123,15 @@ int main(void)
 			sock1->Write(nameUser);
 			number_bytes_received = sock1->Read(msg_rcv);
 			msg_server = msg_rcv.ToString();
-
+			
 			std::cout << "Your opponent is here" << std::endl;
 			std::cout << msg_server << std::endl;
 
 			Board b;
 			b.setBoard();
 			b.printBoard();
-			// create a flag that the server can set to false
+			
+			// check moves made by both players
 			while(gameOn){
 				if(msg_server.substr(17) == "Black"){
 					gameOn = getOpponentMove(sock1, b,"Black");
@@ -139,8 +143,6 @@ int main(void)
 					gameOn = getOpponentMove(sock1, b,"White");
 				}
 			}
-
-			sock1->Write(ByteArray("finished"));
 		}
 
 		if (inputString == "done" || inputString == "server")

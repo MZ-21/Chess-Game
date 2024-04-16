@@ -16,19 +16,16 @@ using namespace Sync;
 std::mutex mtx; // Mutex for thread synchronization
 std::condition_variable cv; // Condition variable for notifying
 std::vector<Socket*> clientSockets; // Vector to store client sockets
-
-Semaphore semTurn("Turn", 1, true); // create semaphore to write
+int gameCounter = 0;
 
 class GameManager : public Thread {
     private:
-    // Socket& sock;
-    // bool& flag;
+    bool& flag;
     Socket *player1, *player2;
 
     public:
-        // GameManager(Socket& s, bool& f) : sock(s), flag(f){} // get access to socket and flag
         ~GameManager(){} // destructor to kill thread
-        GameManager(Socket *p1, Socket *p2) : player1(p1), player2(p2) {}
+        GameManager(Socket *p1, Socket *p2, bool & f, bool & g) : player1(p1), player2(p2), flag(f) {}
     
     // manage thread from game
     virtual long ThreadMain() override{
@@ -49,33 +46,38 @@ class GameManager : public Thread {
             ByteArray player1_move;
             player1->Read(player1_move);
             ByteArray p1_end_msg("player1 has disconnected\nGame Over\nYou Win!");
+
+            // handle player1 disconnecting
             if(!player1->GetOpen()){
                 std::cout << "player1 has disconnected" << std::endl;
                 player2->Write(p1_end_msg);
-                break;
+                sleep(1); // let client finish first before closing
+                player2->Close();
+                delete player1;
+                delete player2;
+                gameCounter--;
+                std::cout << "Number of Games: " << gameCounter << std::endl;
+                return 0;
             }
-            if(player1_move.ToString() == "finished"){
-                break;
-            }
+
             player2->Write(player1_move);
             ByteArray player2_move;
             player2->Read(player2_move);
             ByteArray p2_end_msg("player2 has disconnected\nGame Over\nYou Win!");
+
+            // handle player2 disconnecting
             if(!player2->GetOpen()){
                 std::cout << "player2 has disconnected" << std::endl;
                 player1->Write(p2_end_msg);
-
-                break;
-
-            }
-            if(player2_move.ToString() == "finished"){
-                break;
+                sleep(1); // let client finish first before closing
+                player1->Close();
+                delete player1;
+                delete player2;
+                gameCounter--;
+                std::cout << "Number of Games: " << gameCounter << std::endl;
+                return 0;
             }
             player1->Write(player2_move);
-            // if(player2_move.ToString() !="player2 has disconnected\nGame Over\nYou Win!"){
-            //     player1->Write(end_msg)
-            // }
-            // break;
         }
 
         //Game logic here
@@ -83,18 +85,19 @@ class GameManager : public Thread {
         player2->Close();
         delete player1;
         delete player2;
+        gameCounter--;
+        std::cout << "Number of Games: " << gameCounter << std::endl;
         return 0;
-        //sock.Close(); // close connection
     }
 };
 
 class ServerShutDown : public Thread {
     private:
         SocketServer & serverSocket;
+        bool & flag;
 
     public:
-        // GameManager(Socket& s, bool& f) : sock(s), flag(f){} // get access to socket and flag
-        ServerShutDown(SocketServer & t): Thread(true), serverSocket(t){} // destructor to kill thread
+        ServerShutDown(SocketServer & t, bool & f): Thread(true), serverSocket(t), flag(f){} // destructor to kill thread
     
         // manage thread from game
         virtual long ThreadMain() override{
@@ -105,33 +108,38 @@ class ServerShutDown : public Thread {
                 std::cin >> s;
                 if(s=="quit")
                 {
-                    serverSocket.Shutdown();
+                    flag = false; // signal serverThread
+                    std::cout << "Server will shutdown soon" << std::endl;
                     break;
                 }
             }
-        
+            return 0;
         }
 };
 
+class ServerThread : public Thread {
+    private:
+        SocketServer & sockServer;
+        bool & flag;
+        bool & isServerOn;
 
-int main(void) {
-    SocketServer sockServer(3000); // create server socket
-    ServerShutDown ServerShutDown(sockServer);
-
-    std::cout << "I am server" << std::endl;
-
-    try {
-        while (true) {
-            
+    public:
+        ServerThread(SocketServer & t, bool & f, bool & sf): Thread(true), sockServer(t), flag(f), isServerOn(sf){} // destructor to kill thread
+    
+        // manage thread from game
+        virtual long ThreadMain() override{
+        try {
+            while(true){
+                std::cout << "before" << std::endl;
                 Socket* newClientSocket = new Socket(sockServer.Accept());
-            
-
+                std::cout << "after" << std::endl;
+                
                 // Protecting the access to clientSockets vector with a mutex
                 {
-                    std::lock_guard<std::mutex> lock(mtx);  // Protect the clientSockets vector
+                   std::lock_guard<std::mutex> lock(mtx);  // Protect the clientSockets vector
                     clientSockets.push_back(newClientSocket);
                 }
-
+                std::cout << "length: " << clientSockets.size() << std::endl;
                 if(clientSockets.size()% 2 != 0){
                     std::cout << "Client connected!" << std::endl;
                     ByteArray msg_confirming("Are you ready to play? (Enter yes): ");
@@ -141,7 +149,6 @@ int main(void) {
                     newClientSocket->Read(clientmsg);
 
                     if(!newClientSocket->GetOpen()){
-                        std::lock_guard<std::mutex> lock(mtx);  // Protect the clientSockets vector again
                         auto it = std::find_if(clientSockets.begin(), clientSockets.end(), [&](Sync::Socket* socket) {
                             return socket == newClientSocket;
                         });
@@ -151,33 +158,68 @@ int main(void) {
                         }
                     }
                 }
-                //ThreadSocket* comms = new ThreadSocket(newClientSocket, clientSockets.size());
+                
                 // Check if we have two clients to start a game
                 if (clientSockets.size() >= 2) {
-                    //std::cout << "found 2" << std::endl;
                     // Create a game session with the first two clients
-                    GameManager* game = new GameManager(clientSockets[0], clientSockets[1]);
+                    GameManager* game = new GameManager(clientSockets[0], clientSockets[1], flag, isServerOn);
                     game->Start(); // Start game session in a new thread
+                    gameCounter++;
+                    std::cout << "Number of Games: " << gameCounter << std::endl;
 
                     // Remove the clients from the waiting list
                     {
                         std::lock_guard<std::mutex> lock(mtx);
                         clientSockets.erase(clientSockets.begin(), clientSockets.begin() + 2);
                     }
+
+                    if(!flag){ // stop accepting connections
+                    std::cout << "No more connections will be accepted" << std::endl;
+                    isServerOn = false;
+                        break;
+                    }
                 }
                 else{
                     ByteArray msg_to_client("waiting for opponent");
                     newClientSocket->Write(msg_to_client);
                 }
+            }
         }
-     catch (const std::exception &e)
-    {
-        // Handle std::exception and its subclasses
-        std::cerr << "Standard exception caught: " << e.what() << std::endl;
+            catch (const std::exception &e)
+            {
+                // Handle std::exception and its subclasses
+                std::cerr << "Standard exception caught: " << e.what() << std::endl;
+            }
+            return 0;
+        }
+};
+
+
+int main(void) {
+    SocketServer sockServer(3000); // create server socket
+    bool flag = true;
+    bool isServerOn = true;
+    std::cout << "I am server" << std::endl;
+    ServerShutDown* serverShutDown = new ServerShutDown(sockServer, flag);
+    ServerThread* server = new ServerThread(sockServer, flag, isServerOn);
+
+    while (isServerOn) {
+        sleep(1);
     }
-     std::cout << "End of main" << std::endl;
-        for (int i=0;i<clientSockets.size();i++)
-            delete clientSockets[i];
-        }
-  
+    // wait for server thread to finish
+    while (gameCounter > 0) {
+        sleep(1);
+    }
+
+    // shutdown server
+    std::cout << "End of main" << std::endl;
+    std::cout << "server has shut down" << std::endl;
+    sockServer.Shutdown();
+
+    // termination of server
+    delete serverShutDown;
+    delete server;
+    std::cout << "THE END" << std::endl;
+
+    return 0;
 }
