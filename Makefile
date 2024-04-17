@@ -27,14 +27,5 @@ socket.o : socket.cpp socket.h
 socketserver.o : socketserver.cpp socket.h socketserver.h
 	g++ -c socketserver.cpp -std=c++11
 
-GameThread : GameThread.o thread.o socket.o Blockable.o
-	g++ -o GameThread GameThread.o socket.o thread.o Blockable.o -pthread 
-
-GameThread.o : GameThread.cpp socket.h
-	g++ -c GameThread.cpp -std=c++11
-
-Game/main.o: Game/main.cpp Game/chess.h Game/chess.cpp
-	g++ -c Game/main.cpp -std=c++11 -o Game/main.o
-
 Game/chess.o: Game/chess.cpp Game/chess.h
 	g++ -c Game/chess.cpp -std=c++11 -o Game/chess.o

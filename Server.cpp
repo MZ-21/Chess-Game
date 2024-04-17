@@ -8,8 +8,6 @@
 #include <iostream>
 #include <mutex>
 #include <condition_variable>
-#include "SharedObject.h"
-#include "Semaphore.h"
 #include <algorithm>
 using namespace Sync;
 

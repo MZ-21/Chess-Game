@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <limits>
-#include "SharedObject.h"
-#include "Semaphore.h"
 #include "Game/chess.h"
 
 using namespace Sync;
