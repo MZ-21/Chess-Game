@@ -1,3 +1,4 @@
+// chess game code from George Harter
 #include "chess.h"
 #include <cstdlib>
 
