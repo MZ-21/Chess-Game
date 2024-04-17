@@ -13,8 +13,6 @@
 #include <algorithm>
 using namespace Sync;
 
-std::mutex mtx; // Mutex for thread synchronization
-std::condition_variable cv; // Condition variable for notifying
 std::vector<Socket*> clientSockets; // Vector to store client sockets
 int gameCounter = 0;
 
@@ -130,15 +128,11 @@ class ServerThread : public Thread {
         virtual long ThreadMain() override{
         try {
             while(true){
-                std::cout << "before" << std::endl;
                 Socket* newClientSocket = new Socket(sockServer.Accept());
-                std::cout << "after" << std::endl;
                 
-                // Protecting the access to clientSockets vector with a mutex
-                {
-                   std::lock_guard<std::mutex> lock(mtx);  // Protect the clientSockets vector
-                    clientSockets.push_back(newClientSocket);
-                }
+                // add the clients to the waiting list
+                clientSockets.push_back(newClientSocket);
+
                 std::cout << "length: " << clientSockets.size() << std::endl;
                 if(clientSockets.size()% 2 != 0){
                     std::cout << "Client connected!" << std::endl;
@@ -168,10 +162,7 @@ class ServerThread : public Thread {
                     std::cout << "Number of Games: " << gameCounter << std::endl;
 
                     // Remove the clients from the waiting list
-                    {
-                        std::lock_guard<std::mutex> lock(mtx);
-                        clientSockets.erase(clientSockets.begin(), clientSockets.begin() + 2);
-                    }
+                    clientSockets.erase(clientSockets.begin(), clientSockets.begin() + 2);
 
                     if(!flag){ // stop accepting connections
                     std::cout << "No more connections will be accepted" << std::endl;
